@@ -3,7 +3,12 @@
   "version": "2.4.0",
   "description": "Github action to setup premake on Linux, Windows and MacOS.",
   "main": "index.js",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
+    "build": "ncc build index.js -o dist --source-map --license licenses.txt",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -17,7 +22,10 @@
   },
   "homepage": "https://github.com/abel0b/setup-premake#readme",
   "dependencies": {
-    "@actions/core": "^1.6.0",
-    "@actions/tool-cache": "^1.7.1"
+    "@actions/core": "^3.0.1",
+    "@actions/tool-cache": "^4.0.0"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.38.4"
   }
 }

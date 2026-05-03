@@ -1,0 +1,47 @@
+name: Check dist/
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-dist:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Rebuild dist/
+        run: npm run build
+
+      - name: Compare expected vs actual dist/
+        id: diff
+        run: |
+          if [ -n "$(git status --porcelain dist/)" ]; then
+            echo "::error::dist/ is out of date. Run 'npm run build' and commit the result."
+            git diff --stat -- dist/
+            git diff -- dist/
+            exit 1
+          fi
+
+      - name: Upload regenerated dist on failure
+        if: failure() && steps.diff.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
